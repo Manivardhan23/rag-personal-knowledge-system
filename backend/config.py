@@ -22,3 +22,7 @@ CHUNK_OVERLAP = 200
 
 # Retrieval config
 RETRIEVER_K = 4
+
+# Model config
+GEMINI_LLM_MODEL = "gemini-2.0-flash"
+GEMINI_EMBEDDING_MODEL = "models/gemini-embedding-001"
