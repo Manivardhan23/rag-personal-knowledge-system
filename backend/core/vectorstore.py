@@ -5,7 +5,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
-from langchain.schema import Document
+from langchain_core.documents import Document
 from config import FAISS_INDEX_DIR, RETRIEVER_K
 
 
@@ -19,7 +19,6 @@ def get_embeddings():
 
 def add_to_vectorstore(chunks: list[Document]) -> None:
     """Add document chunks to FAISS index, creating it if it doesn't exist."""
-
     embeddings = get_embeddings()
 
     if os.path.exists(FAISS_INDEX_DIR) and os.listdir(FAISS_INDEX_DIR):
@@ -43,7 +42,6 @@ def add_to_vectorstore(chunks: list[Document]) -> None:
 
 def load_vectorstore() -> FAISS:
     """Load the FAISS index from disk."""
-
     if not os.path.exists(FAISS_INDEX_DIR) or not os.listdir(FAISS_INDEX_DIR):
         raise FileNotFoundError(
             "No FAISS index found. Please ingest at least one document or note first."
