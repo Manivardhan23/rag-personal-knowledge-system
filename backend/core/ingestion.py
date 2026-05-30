@@ -4,8 +4,8 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from langchain_community.document_loaders import PyPDFLoader, TextLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.schema import Document
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_core.documents import Document
 from config import CHUNK_SIZE, CHUNK_OVERLAP
 
 
@@ -19,7 +19,6 @@ def get_text_splitter():
 
 def ingest_document(file_path: str) -> list[Document]:
     """Load a PDF or TXT file and split into chunks."""
-
     ext = os.path.splitext(file_path)[1].lower()
 
     if ext == ".pdf":
@@ -30,7 +29,6 @@ def ingest_document(file_path: str) -> list[Document]:
         raise ValueError(f"Unsupported file type: {ext}. Only PDF and TXT are allowed.")
 
     documents = loader.load()
-
     splitter = get_text_splitter()
     chunks = splitter.split_documents(documents)
 
@@ -40,7 +38,6 @@ def ingest_document(file_path: str) -> list[Document]:
 
 def ingest_note(title: str, content: str) -> list[Document]:
     """Wrap a plain text note into Document chunks."""
-
     document = Document(
         page_content=content,
         metadata={
