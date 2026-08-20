@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Archive — Personal Knowledge Index</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+
+    <!-- ══ ONBOARDING SCREEN (shown when no identity in localStorage) ══ -->
+    <div id="screen-onboarding" class="screen" hidden>
+      <div class="onboard-card">
+        <div class="drawer-tab" style="margin:0 0 0 0; border-radius:4px 4px 0 0; display:inline-block;">KNOWLEDGE&nbsp;INDEX</div>
+        <div class="onboard-body">
+          <h1 class="onboard-title">The Archive</h1>
+          <p class="onboard-sub">Your private knowledge base. Enter your Groq API key to begin — it stays in your browser and is never stored on our server.</p>
+
+          <label class="field-label" for="ob-name">Your name</label>
+          <input type="text" id="ob-name" class="text-input" placeholder="e.g. Mani" />
+
+          <label class="field-label" for="ob-key">Groq API Key</label>
+          <input type="text" id="ob-key" class="text-input" placeholder="gsk_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
+          <p class="onboard-hint">Get your free key at <a href="https://console.groq.com/keys" target="_blank">console.groq.com/keys</a></p>
+
+          <button class="btn-primary" id="ob-submit" style="width:100%; margin-top:0.5rem;">Enter the Archive</button>
+          <p class="desk-message" id="ob-error" role="alert"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ ADMIN LOGIN SCREEN (shown at /admin or via hidden link) ══ -->
+    <div id="screen-admin-login" class="screen" hidden>
+      <div class="onboard-card">
+        <div class="drawer-tab" style="margin:0 0 0 0; border-radius:4px 4px 0 0; display:inline-block; background:var(--oxblood);">ADMIN&nbsp;ACCESS</div>
+        <div class="onboard-body">
+          <h1 class="onboard-title">Admin Panel</h1>
+          <p class="onboard-sub">Enter your admin password to access the archive as administrator.</p>
+
+          <label class="field-label" for="adm-password">Admin Password</label>
+          <input type="password" id="adm-password" class="text-input" placeholder="••••••••" autocomplete="off" />
+
+          <button class="btn-primary" id="adm-submit" style="width:100%; margin-top:0.5rem;">Enter as Admin</button>
+          <p class="desk-message" id="adm-error" role="alert"></p>
+          <p style="margin-top:1rem; font-size:0.8rem; color:var(--ink-faint);">
+            Not admin? <a href="/" style="color:var(--oxblood);">Back to Archive</a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ MAIN APP SCREEN ══ -->
+    <div id="screen-app" class="screen" hidden>
+      <div class="drawer-tab">KNOWLEDGE&nbsp;INDEX</div>
+
+      <header class="masthead">
+        <div class="masthead-inner">
+          <h1>The Archive</h1>
+          <p class="tagline">
+            A private index of what you've read and written. Ask it anything, and
+            it will show its sources.
+          </p>
+          <div class="masthead-meta">
+            <div class="status-line" id="statusLine" data-state="checking">
+              <span class="status-dot"></span>
+              <span id="statusText">checking the index&hellip;</span>
+            </div>
+            <div class="user-badge" id="userBadge"></div>
+          </div>
+        </div>
+      </header>
+
+      <main class="reading-hall">
+        <aside class="accession-desk">
+          <h2 class="desk-heading">Accession Desk</h2>
+          <p class="desk-sub">Add a document or a note to the collection.</p>
+
+          <div class="desk-tabs" role="tablist">
+            <button class="desk-tab is-active" data-panel="panel-document" role="tab" aria-selected="true">Document</button>
+            <button class="desk-tab" data-panel="panel-note" role="tab" aria-selected="false">Note</button>
+          </div>
+
+          <form id="panel-document" class="desk-panel is-active" data-panel>
+            <label class="dropzone" id="dropzone" for="fileInput">
+              <span class="dropzone-title" id="dropzoneLabel">Drop a PDF or TXT file here</span>
+              <span class="dropzone-sub">or click to browse</span>
+            </label>
+            <input type="file" id="fileInput" accept=".pdf,.txt" hidden />
+            <button type="submit" class="btn-primary" id="uploadBtn">Accession file</button>
+            <p class="desk-message" id="uploadMessage" role="status"></p>
+          </form>
+
+          <form id="panel-note" class="desk-panel" data-panel hidden>
+            <label class="field-label" for="noteTitle">Title</label>
+            <input type="text" id="noteTitle" class="text-input" placeholder="e.g. Lecture 4 — Attention mechanisms" required />
+            <label class="field-label" for="noteContent">Content</label>
+            <textarea id="noteContent" class="text-area" rows="6" placeholder="Paste or write the note here…" required></textarea>
+            <button type="submit" class="btn-primary" id="noteBtn">File note</button>
+            <p class="desk-message" id="noteMessage" role="status"></p>
+          </form>
+
+          <div class="collection">
+            <h3 class="collection-heading">In the collection</h3>
+            <ul class="collection-list" id="collectionList">
+              <li class="collection-empty" id="collectionEmpty">Nothing accessioned yet.</li>
+            </ul>
+          </div>
+
+          <div style="margin-top:1.4rem; padding-top:1rem; border-top:1px solid var(--paper-line);">
+            <button class="btn-logout" id="logoutBtn">Sign out</button>
+          </div>
+        </aside>
+
+        <section class="reading-room">
+          <h2 class="desk-heading">Reading Room</h2>
+          <p class="desk-sub">Ask a question. Answers are drawn only from what's in the collection.</p>
+
+          <form id="askForm" class="ask-form">
+            <textarea id="questionInput" class="text-area" rows="3" placeholder="What would you like to ask the archive?" required></textarea>
+            <button type="submit" class="btn-primary" id="askBtn">Ask the archive</button>
+          </form>
+
+          <div class="card-feed" id="cardFeed">
+            <p class="feed-empty" id="feedEmpty">
+              The reading room is quiet. Accession something, then ask your first question.
+            </p>
+          </div>
+        </section>
+      </main>
+
+      <footer class="colophon">
+        <p>Retrieval-augmented, locally embedded, source-cited. Built with FastAPI, LangChain &amp; ChromaDB.</p>
+      </footer>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

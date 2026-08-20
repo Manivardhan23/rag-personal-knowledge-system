@@ -24,3 +24,11 @@ class SourceDocument(BaseModel):
 class QueryResponse(BaseModel):
     answer: str
     sources: list[SourceDocument]
+
+# ── Admin ──────────────────────────────────────────────────
+class AdminLoginRequest(BaseModel):
+    secret: str
+
+class AdminLoginResponse(BaseModel):
+    success: bool
+    message: str

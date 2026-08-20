@@ -3,61 +3,61 @@ import sys
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from langchain_community.vectorstores import FAISS
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_chroma import Chroma
 from langchain_core.documents import Document
-from config import FAISS_INDEX_DIR, RETRIEVER_K
+from config import CHROMA_DIR, RETRIEVER_K
+from core.embeddings import get_embeddings
 
 
-def get_embeddings():
-    """Initialize local embedding model — no API call needed."""
-    return HuggingFaceEmbeddings(
-        model_name="all-MiniLM-L6-v2",
-        model_kwargs={"device": "cpu"}
+def _get_chroma(collection_name: str) -> Chroma:
+    """Return a Chroma vectorstore for a specific named collection."""
+    os.makedirs(CHROMA_DIR, exist_ok=True)
+    return Chroma(
+        collection_name=collection_name,
+        embedding_function=get_embeddings(),
+        persist_directory=CHROMA_DIR
     )
 
 
-def add_to_vectorstore(chunks: list[Document]) -> None:
-    """Add document chunks to FAISS index, creating it if it doesn't exist."""
-    embeddings = get_embeddings()
-
-    if os.path.exists(FAISS_INDEX_DIR) and os.listdir(FAISS_INDEX_DIR):
-        print("[vectorstore] Loading existing index...")
-        vectorstore = FAISS.load_local(
-            FAISS_INDEX_DIR,
-            embeddings,
-            allow_dangerous_deserialization=True
-        )
-        vectorstore.add_documents(chunks)
-        print(f"[vectorstore] Added {len(chunks)} chunks to existing index")
-    else:
-        print("[vectorstore] Creating new index...")
-        os.makedirs(FAISS_INDEX_DIR, exist_ok=True)
-        vectorstore = FAISS.from_documents(chunks, embeddings)
-        print(f"[vectorstore] Created new index with {len(chunks)} chunks")
-
-    vectorstore.save_local(FAISS_INDEX_DIR)
-    print(f"[vectorstore] Index saved to {FAISS_INDEX_DIR}")
+def add_to_vectorstore(chunks: list[Document], collection_name: str) -> None:
+    """Embed and add document chunks to a named ChromaDB collection."""
+    vectorstore = _get_chroma(collection_name)
+    vectorstore.add_documents(chunks)
+    total = vectorstore._collection.count()
+    print(f"[vectorstore] [{collection_name}] Added {len(chunks)} chunks. Total: {total}")
 
 
-def load_vectorstore() -> FAISS:
-    """Load the FAISS index from disk."""
-    if not os.path.exists(FAISS_INDEX_DIR) or not os.listdir(FAISS_INDEX_DIR):
+def load_vectorstore(collection_name: str) -> Chroma:
+    """Load a named ChromaDB collection. Raises FileNotFoundError if empty."""
+    vectorstore = _get_chroma(collection_name)
+    count = vectorstore._collection.count()
+    if count == 0:
         raise FileNotFoundError(
-            "No FAISS index found. Please ingest at least one document or note first."
+            "Knowledge base is empty. Please ingest at least one document or note first."
         )
-
-    embeddings = get_embeddings()
-    vectorstore = FAISS.load_local(
-        FAISS_INDEX_DIR,
-        embeddings,
-        allow_dangerous_deserialization=True
-    )
-    print("[vectorstore] Index loaded successfully")
+    print(f"[vectorstore] [{collection_name}] Loaded — {count} chunks available.")
     return vectorstore
 
 
-def get_retriever():
-    """Return a retriever from the loaded vectorstore."""
-    vectorstore = load_vectorstore()
+def get_retriever(collection_name: str):
+    """Return a retriever from a named ChromaDB collection."""
+    vectorstore = load_vectorstore(collection_name)
     return vectorstore.as_retriever(search_kwargs={"k": RETRIEVER_K})
+
+
+def list_documents(collection_name: str) -> list[dict]:
+    """Return unique sources in a named collection."""
+    try:
+        vectorstore = load_vectorstore(collection_name)
+    except FileNotFoundError:
+        return []
+    result = vectorstore._collection.get(include=["metadatas"])
+    metadatas = result.get("metadatas") or []
+    seen = set()
+    documents = []
+    for meta in metadatas:
+        source = meta.get("source", "unknown")
+        if source not in seen:
+            seen.add(source)
+            documents.append({"source": source, "page": meta.get("page", 0)})
+    return documents

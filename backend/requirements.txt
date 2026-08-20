@@ -1,0 +1,16 @@
+fastapi
+uvicorn[standard]
+python-multipart
+python-dotenv
+langchain
+langchain-community
+langchain-groq
+langchain-core
+chromadb
+langchain-chroma
+pypdf
+pydantic
+google-generativeai
+sentence-transformers
+langchain-huggingface
+groq

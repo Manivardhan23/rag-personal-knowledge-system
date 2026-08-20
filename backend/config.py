@@ -3,26 +3,34 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# LLM Provider — switch between "gemini" and "groq" in .env
-LLM_PROVIDER = os.getenv("LLM_PROVIDER", "gemini")
+# Admin credentials (server-side only)
+ADMIN_GROQ_KEY = os.getenv("ADMIN_GROQ_KEY", "")
+ADMIN_SECRET   = os.getenv("ADMIN_SECRET", "")
 
-# API Keys
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
-GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
-
-# Storage paths — always absolute, works on any machine
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = os.path.join(BASE_DIR, "data")
-UPLOAD_DIR = os.path.join(DATA_DIR, "uploads")
-FAISS_INDEX_DIR = os.path.join(DATA_DIR, "faiss_index")
+# Storage paths
+BASE_DIR  = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR  = os.path.join(BASE_DIR, "data")
 
 # Chunking config
-CHUNK_SIZE = 1000
+CHUNK_SIZE    = 1000
 CHUNK_OVERLAP = 200
 
 # Retrieval config
 RETRIEVER_K = 4
 
-# Model config
-GEMINI_LLM_MODEL = "gemini-2.0-flash"
-GEMINI_EMBEDDING_MODEL = "models/gemini-embedding-001"
+# Groq model config — primary 120B, fallback 20B
+GROQ_PRIMARY_MODEL  = "openai/gpt-oss-120b"
+GROQ_FALLBACK_MODEL = "openai/gpt-oss-20b"
+
+# ── Named collection helpers ────────────────────────────────
+# Each user gets their own ChromaDB collection inside one shared chroma folder.
+
+CHROMA_DIR = os.path.join(DATA_DIR, "chroma")
+
+def personal_collection(member_id: str) -> str:
+    """Collection name for a user's private knowledge base."""
+    return f"personal_{member_id}"
+
+def admin_collection() -> str:
+    """Collection name for the admin's private knowledge base."""
+    return "personal_admin"

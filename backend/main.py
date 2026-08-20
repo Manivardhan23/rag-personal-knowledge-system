@@ -5,39 +5,22 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
 
-from api.routes import router
-from core.vectorstore import load_vectorstore
-
-
-# ── Lifespan: runs on startup and shutdown ─────────────────────────
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """Load the vectorstore when the server starts."""
-    print("[main] Starting up RAG Knowledge System...")
-    try:
-        load_vectorstore()
-        print("[main] Vectorstore loaded successfully.")
-    except FileNotFoundError:
-        print("[main] No vectorstore found yet — ingest a document first.")
-    yield
-    print("[main] Shutting down.")
+from api.v1.router import v1_router
 
 
 # ── App instance ───────────────────────────────────────────────────
 app = FastAPI(
-    title="RAG Personal Knowledge System",
-    description="Upload documents and notes, then query them with AI.",
-    version="1.0.0",
-    lifespan=lifespan
+    title="The Archive — Group Knowledge System",
+    description="Personal + group knowledge base. Each user brings their own Groq API key.",
+    version="2.0.0",
 )
 
 
 # ── CORS Middleware ────────────────────────────────────────────────
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],   # tighten this in production
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -45,4 +28,4 @@ app.add_middleware(
 
 
 # ── Mount Router ───────────────────────────────────────────────────
-app.include_router(router)
+app.include_router(v1_router)
