@@ -25,10 +25,12 @@ class QueryResponse(BaseModel):
     answer: str
     sources: list[SourceDocument]
 
-# ── Admin ──────────────────────────────────────────────────
-class AdminLoginRequest(BaseModel):
-    secret: str
+# ── Auth ───────────────────────────────────────────────────
+class LoginRequest(BaseModel):
+    username: str
+    password: str
 
-class AdminLoginResponse(BaseModel):
+class LoginResponse(BaseModel):
     success: bool
     message: str
+    token: Optional[str] = None

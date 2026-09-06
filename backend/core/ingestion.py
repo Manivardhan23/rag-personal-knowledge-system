@@ -32,7 +32,12 @@ def ingest_document(file_path: str) -> list[Document]:
     splitter = get_text_splitter()
     chunks = splitter.split_documents(documents)
 
-    print(f"[ingestion] {os.path.basename(file_path)} → {len(chunks)} chunks")
+    # Normalize source to just the filename (loaders store the full path by default)
+    filename = os.path.basename(file_path)
+    for chunk in chunks:
+        chunk.metadata["source"] = filename
+
+    print(f"[ingestion] {filename} → {len(chunks)} chunks")
     return chunks
 
 

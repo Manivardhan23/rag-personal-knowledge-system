@@ -11,46 +11,26 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   </head>
   <body>
 
-    <!-- ══ ONBOARDING SCREEN (shown when no identity in localStorage) ══ -->
-    <div id="screen-onboarding" class="screen" hidden>
+    <!-- ══ LOGIN SCREEN ══ -->
+    <div id="screen-login" class="screen" hidden>
       <div class="onboard-card">
         <div class="drawer-tab" style="margin:0 0 0 0; border-radius:4px 4px 0 0; display:inline-block;">KNOWLEDGE&nbsp;INDEX</div>
         <div class="onboard-body">
           <h1 class="onboard-title">The Archive</h1>
-          <p class="onboard-sub">Your private knowledge base. Enter your Groq API key to begin — it stays in your browser and is never stored on our server.</p>
+          <p class="onboard-sub">Your private knowledge base. Sign in to continue.</p>
 
-          <label class="field-label" for="ob-name">Your name</label>
-          <input type="text" id="ob-name" class="text-input" placeholder="e.g. Mani" />
+          <label class="field-label" for="login-username">Username</label>
+          <input type="text" id="login-username" class="text-input" placeholder="Username" autocomplete="username" />
 
-          <label class="field-label" for="ob-key">Groq API Key</label>
-          <input type="text" id="ob-key" class="text-input" placeholder="gsk_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
-          <p class="onboard-hint">Get your free key at <a href="https://console.groq.com/keys" target="_blank">console.groq.com/keys</a></p>
+          <label class="field-label" for="login-password" style="margin-top:0.8rem;">Password</label>
+          <input type="password" id="login-password" class="text-input" placeholder="••••••••" autocomplete="current-password" />
 
-          <button class="btn-primary" id="ob-submit" style="width:100%; margin-top:0.5rem;">Enter the Archive</button>
-          <p class="desk-message" id="ob-error" role="alert"></p>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══ ADMIN LOGIN SCREEN (shown at /admin or via hidden link) ══ -->
-    <div id="screen-admin-login" class="screen" hidden>
-      <div class="onboard-card">
-        <div class="drawer-tab" style="margin:0 0 0 0; border-radius:4px 4px 0 0; display:inline-block; background:var(--oxblood);">ADMIN&nbsp;ACCESS</div>
-        <div class="onboard-body">
-          <h1 class="onboard-title">Admin Panel</h1>
-          <p class="onboard-sub">Enter your admin password to access the archive as administrator.</p>
-
-          <label class="field-label" for="adm-password">Admin Password</label>
-          <input type="password" id="adm-password" class="text-input" placeholder="••••••••" autocomplete="off" />
-
-          <button class="btn-primary" id="adm-submit" style="width:100%; margin-top:0.5rem;">Enter as Admin</button>
-          <p class="desk-message" id="adm-error" role="alert"></p>
-          <p style="margin-top:1rem; font-size:0.8rem; color:var(--ink-faint);">
-            Not admin? <a href="/" style="color:var(--oxblood);">Back to Archive</a>
-          </p>
+          <button class="btn-primary" id="login-submit" style="width:100%; margin-top:1rem;">Enter the Archive</button>
+          <p class="desk-message" id="login-error" role="alert"></p>
         </div>
       </div>
     </div>

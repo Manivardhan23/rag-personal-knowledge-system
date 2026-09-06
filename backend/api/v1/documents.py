@@ -1,9 +1,8 @@
-from fastapi import APIRouter, Header
+from fastapi import APIRouter, HTTPException, Depends
 from fastapi.responses import JSONResponse
-from typing import Optional
 
-from config import personal_collection, admin_collection
-from core.vectorstore import list_documents
+from core.vectorstore import list_documents, delete_document
+from api.deps import validate_session
 
 router = APIRouter()
 
@@ -11,18 +10,22 @@ router = APIRouter()
 # ── List Documents ─────────────────────────────────────────────────
 @router.get("/documents")
 def list_documents_route(
-    x_member_id: Optional[str] = Header(None),
-    x_is_admin: Optional[str] = Header(None),
+    collection: str = Depends(validate_session)
 ):
-    """Return all unique sources in the caller's knowledge base."""
-
-    if x_is_admin == "true":
-        collection = admin_collection()
-    elif x_member_id:
-        collection = personal_collection(x_member_id)
-    else:
-        return JSONResponse(content={"documents": [], "total": 0})
-
+    """Return all unique sources in the personal knowledge base."""
     docs = list_documents(collection)
     return {"documents": docs, "total": len(docs)}
 
+
+# ── Delete Document ─────────────────────────────────────────────────
+@router.delete("/documents")
+def delete_document_route(
+    source: str,
+    collection: str = Depends(validate_session)
+):
+    """Delete a document from the personal knowledge base."""
+    if not source:
+        raise HTTPException(status_code=400, detail="Source parameter is required.")
+
+    delete_document(collection, source)
+    return {"message": "Document deleted.", "source": source}

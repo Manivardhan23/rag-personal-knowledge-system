@@ -61,3 +61,12 @@ def list_documents(collection_name: str) -> list[dict]:
             seen.add(source)
             documents.append({"source": source, "page": meta.get("page", 0)})
     return documents
+
+def delete_document(collection_name: str, source: str) -> None:
+    """Delete all chunks for a specific source document in a named collection."""
+    try:
+        vectorstore = _get_chroma(collection_name)
+        vectorstore._collection.delete(where={"source": source})
+        print(f"[vectorstore] [{collection_name}] Deleted source: {source}")
+    except Exception as e:
+        print(f"[vectorstore] Failed to delete {source}: {e}")

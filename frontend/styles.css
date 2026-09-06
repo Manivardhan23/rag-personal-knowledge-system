@@ -150,10 +150,27 @@ body {
 .index-card::after { content:""; position:absolute; top:0.85rem; right:1rem; width:6px; height:6px; border-radius:50%; background:var(--paper); border:1px solid var(--paper-line); box-shadow:-14px 0 0 var(--paper),-14px 0 0 1px var(--paper-line); }
 .card-question { font-family: var(--font-mono); font-size: 0.78rem; color: var(--ink-soft); margin: 0 0 0.6rem; }
 .card-question::before { content:"Q. "; color: var(--ochre); }
-.card-answer { font-size: 0.98rem; color: var(--ink); line-height: 1.6; margin: 0 0 1rem; white-space: pre-wrap; }
+.card-answer { font-size: 0.98rem; color: var(--ink); line-height: 1.6; margin: 0 0 1rem; }
+
+/* markdown content inside answer cards */
+.card-answer p { margin: 0 0 0.7rem; }
+.card-answer p:last-child { margin-bottom: 0; }
+.card-answer h1,.card-answer h2,.card-answer h3,.card-answer h4 { font-family: var(--font-display); margin: 1rem 0 0.4rem; font-size: 1rem; }
+.card-answer strong { font-weight: 600; color: var(--ink); }
+.card-answer em { font-style: italic; }
+.card-answer ul, .card-answer ol { margin: 0.4rem 0 0.7rem 1.3rem; padding: 0; }
+.card-answer li { margin-bottom: 0.25rem; }
+.card-answer code { font-family: var(--font-mono); font-size: 0.83em; background: rgba(35,38,31,0.07); border-radius: 2px; padding: 0.1em 0.35em; }
+.card-answer pre { background: rgba(35,38,31,0.06); border: 1px solid var(--paper-line); border-radius: 3px; padding: 0.85rem 1rem; overflow-x: auto; margin: 0.6rem 0; }
+.card-answer pre code { background: none; padding: 0; font-size: 0.82rem; line-height: 1.55; }
+.card-answer hr { border: none; border-top: 1px dashed var(--paper-line); margin: 0.8rem 0; }
+.card-answer blockquote { border-left: 3px solid var(--oxblood-soft); margin: 0.5rem 0; padding: 0.2rem 0.8rem; color: var(--ink-soft); font-style: italic; }
+.index-card.is-error { border-color: rgba(124,43,40,0.4); }
+.index-card.is-error .card-answer { color: var(--oxblood); }
+
 .card-sources-wrapper { padding-top: 0.9rem; border-top: 1px dashed var(--paper-line); }
 .sources-toggle { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em; color: var(--ink-faint); background: none; border: none; padding: 0; cursor: pointer; display: inline-flex; align-items: center; gap: 0.3rem; transition: color 0.15s ease; }
-.sources-toggle::before { content: "BA"; font-size: 0.5rem; transition: transform 0.2s ease; }
+.sources-toggle::before { content: " BA"; font-size: 0.5rem; transition: transform 0.2s ease; }
 .sources-toggle.is-open::before { transform: rotate(90deg); }
 .sources-toggle:hover { color: var(--ink-soft); }
 .card-sources { display: flex; flex-wrap: wrap; gap: 0.5rem; padding-top: 0.6rem; }
@@ -163,8 +180,10 @@ body {
 .card-loading { font-family: var(--font-mono); font-size: 0.8rem; color: var(--ink-faint); }
 .card-loading::after { content:""; display: inline-block; width: 1em; text-align: left; animation: ellipsis 1.2s steps(4,end) infinite; }
 @keyframes ellipsis { 0%{content:""} 25%{content:"."} 50%{content:".."} 75%{content:"..."} }
-.index-card.is-error { border-color: rgba(124,43,40,0.4); }
-.index-card.is-error .card-answer { color: var(--oxblood); }
 
 /* footer */
 .colophon { text-align: center; font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-faint); padding: 2rem 1rem 2.5rem; }
+
+.item-actions { margin-left: auto; display: flex; align-items: center; }
+.btn-delete { background: none; border: none; color: var(--oxblood-soft); font-size: 0.8rem; cursor: pointer; padding: 0.2rem; opacity: 0.6; transition: opacity 0.15s ease; }
+.btn-delete:hover { opacity: 1; color: var(--oxblood); }
